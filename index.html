@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Signal Change Radar</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="ambient">
+      <div class="blob blob-one"></div>
+      <div class="blob blob-two"></div>
+      <div class="grid-lines"></div>
+    </div>
+
+    <header class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Binance Spot Monitor</p>
+        <h1>Signal Change Radar</h1>
+        <p class="subtitle">
+          Track sudden price moves across your watchlist. Get instant alerts when a
+          coin moves past your thresholds in 1m, 5m, 15m, 1h, 1d, 1w, or 1mo windows.
+        </p>
+      </div>
+      <div class="hero-meta">
+        <div class="stat-card">
+          <span class="stat-label">Connection</span>
+          <span id="status-pill" class="status-pill idle">Idle</span>
+          <span id="status-text" class="stat-value">Waiting for start</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Watching</span>
+          <span class="stat-value"><span id="symbol-count">0</span> pairs</span>
+          <span class="stat-hint" id="last-update">No updates yet</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="panel controls">
+        <div class="panel-header">
+          <h2>Radar Controls</h2>
+          <p>Choose the pairs, windows, and alert thresholds that matter to you.</p>
+        </div>
+
+        <div class="field">
+          <label for="symbols">Assets or pairs</label>
+          <textarea id="symbols" rows="4">USDT, BTC, GIGGLE, SOL, ETH, DOT, BNB, DOGE, XRP, FORM</textarea>
+          <div class="help" id="symbols-help">
+            Use commas or new lines. Examples: BTC, ETH, SOL or BTCUSDT, ETH/USDT.
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="quote">Default quote</label>
+            <select id="quote">
+              <option value="USDT" selected>USDT</option>
+              <option value="BTC">BTC</option>
+              <option value="ETH">ETH</option>
+              <option value="BNB">BNB</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Time windows & thresholds</label>
+            <div class="window-grid">
+              <div class="window-row">
+                <label class="window-check">
+                  <input type="checkbox" data-window="1" checked />
+                  <span>1m</span>
+                </label>
+                <input type="number" min="0.1" step="0.1" value="0.5" data-window-threshold="1" />
+                <span class="unit">%</span>
+              </div>
+              <div class="window-row">
+                <label class="window-check">
+                  <input type="checkbox" data-window="5" checked />
+                  <span>5m</span>
+                </label>
+                <input type="number" min="0.1" step="0.1" value="1.0" data-window-threshold="5" />
+                <span class="unit">%</span>
+              </div>
+              <div class="window-row">
+                <label class="window-check">
+                  <input type="checkbox" data-window="15" checked />
+                  <span>15m</span>
+                </label>
+                <input type="number" min="0.1" step="0.1" value="1.5" data-window-threshold="15" />
+                <span class="unit">%</span>
+              </div>
+              <div class="window-row">
+                <label class="window-check">
+                  <input type="checkbox" data-window="60" />
+                  <span>1h</span>
+                </label>
+                <input type="number" min="0.1" step="0.1" value="2.5" data-window-threshold="60" />
+                <span class="unit">%</span>
+              </div>
+              <div class="window-row">
+                <label class="window-check">
+                  <input type="checkbox" data-window="1440" />
+                  <span>1d</span>
+                </label>
+                <input type="number" min="0.1" step="0.1" value="4.0" data-window-threshold="1440" />
+                <span class="unit">%</span>
+              </div>
+              <div class="window-row">
+                <label class="window-check">
+                  <input type="checkbox" data-window="10080" />
+                  <span>1w</span>
+                </label>
+                <input type="number" min="0.1" step="0.1" value="6.0" data-window-threshold="10080" />
+                <span class="unit">%</span>
+              </div>
+              <div class="window-row">
+                <label class="window-check">
+                  <input type="checkbox" data-window="43200" />
+                  <span>1mo</span>
+                </label>
+                <input type="number" min="0.1" step="0.1" value="10.0" data-window-threshold="43200" />
+                <span class="unit">%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="cooldown">Alert cooldown</label>
+            <select id="cooldown">
+              <option value="15">15 seconds</option>
+              <option value="30" selected>30 seconds</option>
+              <option value="60">60 seconds</option>
+            </select>
+            <div class="help">Thresholds are set per window.</div>
+          </div>
+        </div>
+
+        <div class="field-row actions">
+          <button id="start" class="primary">Start</button>
+          <button id="stop" class="ghost" disabled>Stop</button>
+          <button id="clear-alerts" class="ghost">Clear alerts</button>
+          <label class="toggle">
+            <input type="checkbox" id="sound" checked />
+            <span>Sound</span>
+          </label>
+        </div>
+
+        <div class="field status-note" id="status-note"></div>
+      </section>
+
+      <section class="panel live">
+        <div class="panel-header live-header">
+          <div class="panel-header-top">
+            <h2>Live Signals</h2>
+            <button id="toggle-live-expand" class="ghost small" type="button" aria-pressed="false">
+              Expand
+            </button>
+          </div>
+          <p>Current prices and percent moves are updated every second.</p>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Symbol</th>
+                <th>Price</th>
+                <th data-window-col="1">1m change</th>
+                <th data-window-col="5">5m change</th>
+                <th data-window-col="15">15m change</th>
+                <th data-window-col="60">1h change</th>
+                <th data-window-col="1440">1d change</th>
+                <th data-window-col="10080">1w change</th>
+                <th data-window-col="43200">1mo change</th>
+                <th>Updated</th>
+              </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+
+        <div class="alerts-header">
+          <h3>Alert Feed</h3>
+          <span class="alerts-count" id="alerts-count">0</span>
+        </div>
+        <div class="alerts" id="alerts"></div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,5 @@
+<resources>
+  <string name="app_name">Crypto Signal Radar</string>
+  <string name="foreground_channel">Signal Monitor</string>
+  <string name="alert_channel">Signal Alerts</string>
+</resources>
